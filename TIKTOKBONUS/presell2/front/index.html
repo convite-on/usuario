@@ -725,11 +725,6 @@
     const urlAtual = new URL(window.location.href);
     const params = new URLSearchParams(urlAtual.search);
 
-    // 🔥 garante que SEMPRE exista upsell
-    if (!params.has('upsell')) {
-        params.set('upsell', 'up0');
-    }
-
     const finalUrl = new URL(BASE_URL, window.location.origin);
 
     // Repassa UTMs + ttclid + upsell
